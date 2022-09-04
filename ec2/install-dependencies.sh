@@ -21,4 +21,7 @@ echo "Adding config to ubuntu's .bashrc file"
 su ubuntu -c "echo $'\nexport PATH=/usr/bin:\$PATH\nexport DOCKER_HOST=unix:///run/user/$UBUNTU_UID/docker.sock' >> ~/.bashrc"
 
 echo "Creating the portainer agent container"
-su ubuntu -c "export PATH=/usr/bin:$PATH && export DOCKER_HOST=unix:///run/user/$UBUNTU_UID/docker.sock && docker run hello-world && docker run -d -p 9012:9001 --name portainer_agent_rootless --restart=always -v /run/user/$UBUNTU_UID/docker.sock:/var/run/docker.sock -v ~/.local/share/docker/volumes:/var/lib/docker/volumes portainer/agent:latest"
+su ubuntu -c "export PATH=/usr/bin:$PATH && export DOCKER_HOST=unix:///run/user/$UBUNTU_UID/docker.sock && docker run --rm hello-world && docker run -d -p 9012:9001 --name portainer_agent_rootless --restart=always -v /run/user/$UBUNTU_UID/docker.sock:/var/run/docker.sock -v ~/.local/share/docker/volumes:/var/lib/docker/volumes portainer/agent:latest"
+
+echo "Enabling linger for ubuntu user"
+sudo loginctl enable-linger ubuntu
