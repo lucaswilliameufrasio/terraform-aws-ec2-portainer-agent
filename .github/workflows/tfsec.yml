@@ -4,6 +4,8 @@ on:
   pull_request:
     types:
       - opened
+      - reopened
+      - synchronize
     branches:
       - main
     paths:
@@ -19,7 +21,14 @@ jobs:
 
       - name: tfsec
         id: tfsec
-        run: echo "::set-output name=result::$(docker run --rm -v "$(pwd):/terraform" aquasec/tfsec --soft-fail /terraform)"
+        run: |
+          body="$(docker run --rm -t -v "$(pwd):/terraform" aquasec/tfsec --soft-fail --format json /terraform)"
+          body="${body//'%'/'%25'}"
+          body="${body//$'\n'/'%0A'}"
+          body="${body//$'\r'/'%0D'}" 
+          echo "::set-output name=result::$body"
+
+      - run: echo "${{ steps.tfsec.outputs.result }}"
 
       - name: Comment pull request with tfsec result
         if: github.event_name == 'pull_request'
@@ -27,5 +36,4 @@ jobs:
         with:
           repository: ${{ github.event.repository.full_name }}
           issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            ${{ steps.tfsec.outputs.result }}
+          body: "${{ steps.tfsec.outputs.result }}"
