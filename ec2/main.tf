@@ -39,10 +39,10 @@ resource "aws_instance" "ec2_instance" {
   subnet_id              = var.public_subnet
 
   tags = {
-    Name = "TF Generated EC2"
+    Name = "Terraform Generated EC2"
   }
 
-  user_data = file("${path.root}/ec2/userdata.tpl")
+  user_data = file("${path.root}/ec2/install-dependencies.sh")
 
   root_block_device {
     volume_size = 10
