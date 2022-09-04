@@ -19,7 +19,7 @@ data "aws_ami" "ubuntu" {
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-arm64-server-*"]
   }
 
   filter {
@@ -30,9 +30,9 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-# Create a EC2 Instance (Ubuntu 20)
-resource "aws_instance" "uai" {
-  instance_type          = "t2.micro" # free instance
+# Create a EC2 Instance (Ubuntu 22.04)
+resource "aws_instance" "ec2_instance" {
+  instance_type          = "t4g.micro"
   ami                    = data.aws_ami.ubuntu.id
   key_name               = aws_key_pair.key_pair.id
   vpc_security_group_ids = [var.public_sg]
@@ -52,9 +52,9 @@ resource "aws_instance" "uai" {
 # Create and assosiate an Elastic IP
 resource "aws_eip" "eip" {
   vpc = true
-  instance = aws_instance.uai.id
+  instance = aws_instance.ec2_instance.id
   depends_on = [
     var.internet_gateway,
-    aws_instance.uai
+    aws_instance.ec2_instance
   ]
 }
