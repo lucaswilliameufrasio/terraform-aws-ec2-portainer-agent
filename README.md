@@ -24,6 +24,15 @@ $ terraform plan
 # apply configuration
 $ terraform apply
 
+# Change key permissions
+chmod 400 ./key.pem
+
+# Access your instance through ssh
+ssh -i "key.pem" ubuntu@<YOUR_INSTANCE_PUBLIC_IP>
+
+# Verify everything was installed properly
+cat /var/log/cloud-init-output.log
+
 # destroy configuration
 $ terraform destroy
 ```
