@@ -22,7 +22,7 @@ jobs:
         run: echo "::set-output name=result::$(docker run --rm -v "$(pwd):/terraform" aquasec/tfsec --soft-fail /terraform)"
 
       - name: Comment pull request with tfsec result
-        if: github.event_name != 'pull_request'
+        if: github.event_name == 'pull_request'
         uses: peter-evans/create-or-update-comment@v2
         with:
           repository: ${{ github.event.repository.full_name }}
