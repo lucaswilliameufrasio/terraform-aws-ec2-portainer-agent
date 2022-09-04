@@ -18,6 +18,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: tfsec
-        uses: aquasecurity/tfsec-action@v1.0.0
+        id: tfsec
+        run: echo "::set-output name=result::$(docker run --rm -v "$(pwd):/terraform" aquasec/tfsec --soft-fail /terraform)"
+
+      - name: Comment pull request with tfsec result
+        if: github.event_name !== 'pull_request'
+        uses: peter-evans/create-or-update-comment@v2
         with:
-          soft_fail: true
+          repository: ${{ github.event.repository.full_name }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ${{ steps.tfsec.outputs.result }}
